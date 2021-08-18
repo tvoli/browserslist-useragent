@@ -1,6 +1,6 @@
 const browserslist = require('browserslist')
 const semver = require('semver')
-const useragent = require('useragent')
+const UAParser = require('ua-parser-js')
 
 // @see https://github.com/ai/browserslist#browsers
 
@@ -23,6 +23,12 @@ const browserNameMap = {
   and_uc: 'UCAndroid',
 }
 
+function getNormalizedVersion(version = '') {
+  const [major = 0, minor = 0, patch = 0] = version.split('.').slice(0, 3);
+
+  return [major, minor, patch].join('.');
+}
+
 function resolveUserAgent(uaString) {
   // Chrome and Opera on iOS uses a UIWebView of the underlying platform to render
   // content, by stripping the CriOS or OPiOS strings the useragent parser will alias the
@@ -38,14 +44,13 @@ function resolveUserAgent(uaString) {
   // Facebook Webview
   strippedUA = strippedUA.replace(/FB_IAB/g, '').replace(/FBAN\/FBIOS/g, '');
 
-  const parsedUA = useragent.parse(strippedUA)
-
+  const parsedUA = UAParser(strippedUA)
   // Case A: For Safari, Chrome and others browsers on iOS
   // that report as Safari after stripping tags
-  if (parsedUA.family.includes('Safari') && parsedUA.os.family === 'iOS') {
+  if (parsedUA.browser.name.includes('Safari') && parsedUA.os.name === 'iOS') {
     return {
       family: 'iOS',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version: getNormalizedVersion(parsedUA.browser.version || parsedUA.os.version),
     }
   }
 
@@ -54,15 +59,14 @@ function resolveUserAgent(uaString) {
   // version. This is based on the assumption that the
   // underlying Safari Engine used will be *atleast* equal
   // to the iOS version it's running on.
-  if (parsedUA.os.family === 'iOS') {
+  if (parsedUA.os.name === 'iOS') {
     return {
       family: 'iOS',
-      version: [parsedUA.os.major, parsedUA.os.minor,
-        parsedUA.os.patch].join('.'),
+      version: getNormalizedVersion(parsedUA.os.version),
     }
   }
 
-
+  const version = getNormalizedVersion(parsedUA.browser.version);
   // Case C: The caniuse database does not contain
   // historical browser versions for so called `minor`
   // browsers like Chrome for Android, Firefox for Android etc
@@ -70,48 +74,62 @@ function resolveUserAgent(uaString) {
   // @see https://github.com/Fyrd/caniuse/issues/3518
 
   if (
-    parsedUA.family.includes('Chrome Mobile') ||
-    parsedUA.family.includes('Chrome Mobile WebView') ||
-    parsedUA.family.includes('Chromium') ||
-    parsedUA.family.includes('HeadlessChrome')
+    parsedUA.browser.name.includes('Chrome Mobile') ||
+    parsedUA.browser.name.includes('Chrome WebView') ||
+    parsedUA.browser.name.includes('Chromium') ||
+    parsedUA.browser.name.includes('Chrome Headless')
   ) {
     return {
       family: 'Chrome',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version,
     }
   }
 
-  if (parsedUA.family === 'Samsung Internet') {
+  if (parsedUA.browser.name === 'Samsung Browser') {
     return {
       family: 'Samsung',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version,
     }
   }
 
-  if (parsedUA.family === 'Firefox Mobile') {
+  if (parsedUA.browser.name === 'Firefox Mobile') {
     return {
       family: 'Firefox',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version,
     }
   }
 
-  if (parsedUA.family === 'IE') {
+  if (parsedUA.browser.name === 'IE') {
     return {
       family: 'Explorer',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version,
     }
   }
 
-  if (parsedUA.family === 'IE Mobile') {
+  if (parsedUA.browser.name === 'IEMobile') {
     return {
       family: 'ExplorerMobile',
-      version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+      version,
+    }
+  }
+
+  if (parsedUA.engine.name === 'Blink' && parsedUA.os.name === 'Android') {
+    return {
+      family: 'Chrome',
+      version: getNormalizedVersion(parsedUA.engine.version),
+    }
+  }
+
+  if (parsedUA.browser.name === 'Android Browser') {
+    return {
+      family: 'Android',
+      version: getNormalizedVersion(parsedUA.os.version),
     }
   }
 
   return {
-    family: parsedUA.family,
-    version: [parsedUA.major, parsedUA.minor, parsedUA.patch].join('.'),
+    family: parsedUA.browser.name,
+    version,
   }
 }
 
