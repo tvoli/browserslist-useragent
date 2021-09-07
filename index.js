@@ -38,13 +38,21 @@ function resolveUserAgent(uaString) {
 
   let strippedUA = uaString.replace(/((CriOS|OPiOS)\/(\d+)\.(\d+)\.(\d+)\.(\d+))/, '')
 
-  // Yandex Browser uses Chromium as the udnerlying engine
+  // Yandex Browser uses Chromium as the underlying engine
   strippedUA = strippedUA.replace(/YaBrowser\/(\d+\.?)+/g, '')
 
   // Facebook Webview
   strippedUA = strippedUA.replace(/FB_IAB/g, '').replace(/FBAN\/FBIOS/g, '');
 
   const parsedUA = UAParser(strippedUA)
+
+  if (!parsedUA.browser.name) {
+    return {
+      family: '',
+      version: '0.0.0'
+    };
+  }
+
   // Case A: For Safari, Chrome and others browsers on iOS
   // that report as Safari after stripping tags
   if (parsedUA.browser.name.includes('Safari') && parsedUA.os.name === 'iOS') {
