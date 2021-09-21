@@ -23,7 +23,7 @@ const browserNameMap = {
   and_uc: 'UCAndroid',
 }
 
-function getNormalizedVersion(version = '') {
+function getNormalizedVersion(version = '0.0.0') {
   const [major = 0, minor = 0, patch = 0] = version.split('.').slice(0, 3);
 
   return [major, minor, patch].join('.');

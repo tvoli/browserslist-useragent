@@ -327,7 +327,47 @@ it('can deal with non-numerical version numbers returned by browserslist for saf
     .toBeTruthy()
 })
 
-it('can deal with invalid user agent', () => {
+it('can deal with browsers on Linux OS', () => {
+  expect(resolveUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.21 (KHTML, like Gecko) wpif Safari/537.21'))
+    .toEqual({
+      family: 'Safari',
+      version: '0.0.0',
+    })
+})
+
+it('can deal with custom user agent', () => {
+
+
+  expect(resolveUserAgent('Braintree-Webhooks'))
+    .toEqual({
+      family: '',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent('Mozilla/5.0 (compatible; BLEXBot/1.0; +http://webmeup-crawler.com/)'))
+    .toEqual({
+      family: '',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'))
+    .toEqual({
+      family: '',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent('Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'))
+    .toEqual({
+      family: '',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent('curl/7.64.1'))
+    .toEqual({
+      family: '',
+      version: '0.0.0',
+    })
+
   expect(resolveUserAgent(CustomUserAgentString.INVALID))
     .toEqual({
       family: '',
