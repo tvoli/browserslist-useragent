@@ -65,6 +65,18 @@ matchesUA('Mozilla/5.0 (Windows NT 10.0; rv:54.0) Gecko/20100101 Firefox/54.0', 
  - It is a good idea to update this package often so that browser definitions are upto date. 
  - It is also a good idea to add `unreleased versions` to your browserslist query, and set `ignoreMinor` and `ignorePatch` to true so that alpha / beta / canary versions of browsers are matched.
  - In case you're unable to keep this package up-to-date, you can set the `allowHigherVersions` to `true`. For all the browsers specified in your browserslist query, this will return a match if the user agent version is equal to or higher than those specified in your browserslist query. Use this with care though, since it's a wildcard, and only lightly tested.
+
+## Dev workflow
+ - create a branch from `master` branch
+ - work on something
+ - prepare a PR back into `master` branch
+ - get your PR approved
+ - bump version ([according to semver](https://semver.org/#summary)) with `yarn version --new-version <patch|minor|major>` [yarn version docs](https://yarnpkg.com/en/docs/cli/version)
+ - `push` your branch
+ - upload package into repository with `yarn publish` (Bonus info: version can only be unpublished within the first 24 hours)
+ - merge PR and delete your branch
+ - create a new branch in web-mamo and run `yarn upgrade @tvoli/browserslist-useragent`. Create web-mamo PR
+
  
  ## Further reads
  - [Smart Bundling: Shipping legacy code to only legacy browsers](https://www.smashingmagazine.com/2018/10/smart-bundling-legacy-code-browsers/) 
