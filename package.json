@@ -1,6 +1,6 @@
 {
   "name": "@tvoli/browserslist-useragent",
-  "version": "3.1.1",
+  "version": "3.1.3",
   "description": "A utility to match a browselist query to browser user agents",
   "main": "lib/index.js",
   "repository": "https://github.com/tvoli/browserslist-useragent",

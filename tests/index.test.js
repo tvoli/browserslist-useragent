@@ -8,6 +8,9 @@ const CustomUserAgentString = {
   FACEBOOK_WEBVIEW_CHROME_ANDROID: 'Mozilla/5.0 (Linux; Android 8.0.0; LG-H930 Build/OPR1.170623.026; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/69.0.3497.100 Mobile Safari/537.36 [FB_IAB/Orca-Android;FBAV/189.0.0.27.99;]',
   FACEBOOK_WEBVIEW_IOS: 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 [FBAN/FBIOS;FBAV/27.0.0.10.12;FBBV/8291884;FBDV/iPhone7,1;FBMD/iPhone;FBSN/iPhone OS;FBSV/8.2;FBSS/3; FBCR/vodafoneIE;FBID/phone;FBLC/en_US;FBOP/5]',
   INVALID: 'this is an invalid user agent',
+  INCORRECT_FIREFOX_VERSION: 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:x.x.x) Gecko/20041107 Firefox/x.x',
+  KINDLE: 'SendToKindle/1.0.253173.0.10 CFNetwork/1325.0.1 Darwin/21.1.0',
+  OPERA: 'Opera/2 CFNetwork/1325.0.1 Darwin/21.1.0',
 }
 
 it('normalizes queries properly', () => {
@@ -371,6 +374,24 @@ it('can deal with custom user agent', () => {
   expect(resolveUserAgent(CustomUserAgentString.INVALID))
     .toEqual({
       family: '',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent(CustomUserAgentString.INCORRECT_FIREFOX_VERSION))
+    .toEqual({
+      family: 'Firefox',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent(CustomUserAgentString.KINDLE))
+    .toEqual({
+      family: 'iOS',
+      version: '0.0.0',
+    })
+
+  expect(resolveUserAgent(CustomUserAgentString.OPERA))
+    .toEqual({
+      family: 'iOS',
       version: '0.0.0',
     })
 });

@@ -23,10 +23,15 @@ const browserNameMap = {
   and_uc: 'UCAndroid',
 }
 
+function parseNumber(value) {
+  const int = parseInt(value);
+  return !value || isNaN(int) ? 0 : int;
+}
+
 function getNormalizedVersion(version = '0.0.0') {
   const [major = 0, minor = 0, patch = 0] = version.split('.').slice(0, 3);
 
-  return [major, minor, patch].join('.');
+  return [parseNumber(major), parseNumber(minor), parseNumber(patch)].join('.');
 }
 
 function resolveUserAgent(uaString) {
